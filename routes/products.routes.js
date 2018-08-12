@@ -5,13 +5,17 @@ var jwt = require('jsonwebtoken');
 // router.get('/', verifyToken, function(req, res, next) {
 router.get('/', function(req, res, next) {
     res.locals.connection.query('SELECT * from products order by name', function (error, results, fields) {
-    		if (error) throw error;
-    		res.json({status: 200, error: null, data: results});
+    		if (error) {
+          res.json({status: 500, error: error.message, data: null })
+        } else {
+          res.json({status: 200, error: null, data: results});
+        }
     });
 });
 
 router.delete('/:id', function(req, res, next) {
   console.log(req.params.id);
+
   res.locals.connection.query('DELETE FROM products where id = ?', [ req.params.id ], function (error, results, fields) {
     if (error) throw error;
     res.json({status: 200, error: null, data: true});
