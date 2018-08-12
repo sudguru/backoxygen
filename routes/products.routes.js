@@ -10,6 +10,14 @@ router.get('/', function(req, res, next) {
     });
 });
 
+router.delete('/:id', function(req, res, next) {
+  console.log(req.params.id);
+  res.locals.connection.query('DELETE FROM products where id = ?', [ req.params.id ], function (error, results, fields) {
+    if (error) throw error;
+    res.json({status: 200, error: null, data: true});
+  });
+});
+
 
 //verify verifyToken
 function verifyToken(req, res, next) {
