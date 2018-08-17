@@ -13,6 +13,32 @@ router.get('/', function(req, res, next) {
     });
 });
 
+router.post('/', function(req, res, next) {
+    console.log('sdf', req.body.product);
+    res.locals.connection.query('INSERT INTO products SET ?', req.body.product , function (error, results, fields) {
+        if (error) {
+          res.json({status: 500, error: error.message, data: null })
+        } else {
+          res.json({status: 200, error: null, data: true});
+        }
+    });
+});
+
+router.post('/edit/:id', function(req, res, next) {
+    //console.log('sdf', req.body.product);
+    const product = req.body.product;
+    const id = req.params.id;
+    res.locals.connection.query('UPDATE products SET ? where id = ?', [ product, id ] , function (error, results, fields) {
+        if (error) {
+          res.json({status: 500, error: error.message, data: null })
+        } else {
+          res.json({status: 200, error: null, data: true});
+        }
+    });
+});
+
+
+
 router.delete('/:id', function(req, res, next) {
   console.log(req.params.id);
 
