@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
     console.log('sdf', req.body.party);
-    if(req.body.party.self = true) {
+    if(req.body.party.self == true) {
       res.locals.connection.query("UPDATE parties SET self = ?", false);
     }
     res.locals.connection.query('INSERT INTO parties SET ?', req.body.party , function (error, results, fields) {
