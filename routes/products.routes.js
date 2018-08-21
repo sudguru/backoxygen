@@ -14,11 +14,23 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-    console.log('sdf', req.body.product);
-    res.locals.connection.query('INSERT INTO products SET ?', req.body.product , function (error, results, fields) {
+    var product = req.body.product;
+    var parties = req.body.parties;
+    console.log(product);
+    console.log(parties);
+    res.locals.connection.query('INSERT INTO products SET ?', product , function (error, results, fields) {
+        product.id = results.insertId;
         if (error) {
           res.json({status: 500, error: error.message, data: null })
         } else {
+          parties.forEach(party => {
+            const product_price = {
+              product_id: product.id,
+              party_id: party.id,
+              rate: product.base_rate
+            }
+            res.locals.connection.query('INSERT INTO product_price SET ?', product_price);
+          });
           res.json({status: 200, error: null, data: true});
         }
     });
@@ -36,6 +48,8 @@ router.post('/edit/:id', function(req, res, next) {
         }
     });
 });
+
+
 
 
 
