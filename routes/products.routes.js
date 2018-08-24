@@ -18,11 +18,11 @@ router.post('/', function(req, res, next) {
     var parties = req.body.parties;
     console.log(product);
     console.log(parties);
-    res.locals.connection.query('INSERT INTO products SET ?', product , function (error, results, fields) {
-        product.id = results.insertId;
+    res.locals.connection.query('INSERT INTO products SET ?', product , function (error, results, fields) {   
         if (error) {
           res.json({status: 500, error: error.message, data: null })
         } else {
+          product.id = results.insertId;
           parties.forEach(party => {
             const product_price = {
               product_id: product.id,

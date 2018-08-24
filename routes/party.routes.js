@@ -29,17 +29,18 @@ router.get('/prices/:party_id', function(req, res, next) {
 router.post('/', function(req, res, next) {
     var products = req.body.products;
     var party = req.body.party;
+    var containers = req.body.containers;
     console.log('products', products);
     console.log('party', party);
     if(req.body.party.self == true) {
       res.locals.connection.query("UPDATE parties SET self = ?", false);
     }
     res.locals.connection.query('INSERT INTO parties SET ?', party , function (error, results, fields) {
-    		party.id = results.insertId;
         if (error) {
           console.log(error);
           res.json({status: 500, error: error.message, data: null })
         } else {
+          party.id = results.insertId;
         	products.forEach(product => {
         		const product_price = {
         			product_id: product.id,
@@ -48,6 +49,14 @@ router.post('/', function(req, res, next) {
         		}
         		res.locals.connection.query('INSERT INTO product_price SET ?', product_price);
         	});
+          containers.forEach(container => {
+            const container_initial_stock = {
+              party_id: party.id,
+              container_id: container.id,
+              quantity: 0
+            };
+            res.locals.connection.query('INSERT INTO container_initial_stock SET ?', container_initial_stock);
+          });
           res.json({status: 200, error: null, data: true});
         }
     });

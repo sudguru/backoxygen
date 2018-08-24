@@ -7,7 +7,7 @@
 #
 # Host: localhost (MySQL 5.7.17)
 # Database: oxygen
-# Generation Time: 2018-08-21 14:02:56 +0000
+# Generation Time: 2018-08-24 14:09:15 +0000
 # ************************************************************
 
 
@@ -46,10 +46,14 @@ DROP TABLE IF EXISTS `container_inital_stock`;
 
 CREATE TABLE `container_inital_stock` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `party_id` int(11) NOT NULL,
-  `container_id` int(11) NOT NULL,
+  `party_id` int(11) unsigned NOT NULL,
+  `container_id` int(11) unsigned NOT NULL,
   `quantity` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `party_id` (`party_id`),
+  KEY `container_id` (`container_id`),
+  CONSTRAINT `container_inital_stock_ibfk_1` FOREIGN KEY (`party_id`) REFERENCES `parties` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `container_inital_stock_ibfk_2` FOREIGN KEY (`container_id`) REFERENCES `containers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -62,7 +66,9 @@ DROP TABLE IF EXISTS `containers`;
 CREATE TABLE `containers` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL DEFAULT '',
-  `capacity` double(10,2) DEFAULT NULL,
+  `capacity` double(10,2) NOT NULL,
+  `unit` varchar(20) NOT NULL DEFAULT '',
+  `initial_quantity` double(10,2) NOT NULL DEFAULT '0.00',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -90,9 +96,8 @@ LOCK TABLES `parties` WRITE;
 
 INSERT INTO `parties` (`id`, `code`, `name`, `address`, `email`, `deposit`, `initial_balance`, `self`)
 VALUES
-	(8,'asdf','asdf','asdf','dsfaf@fadf.com',44.00,55.00,0),
-	(9,'asdf','sadf','dsfaf','asdf@dfadsf.com',33.00,55.00,0),
-	(10,'sgoo','Sudeep Gurung','Lazimpat','sg@gmail.com',450000.00,50000.00,0);
+	(11,'one','Party One','Sinamanagal','one@party.com',12000.00,12000.00,1),
+	(12,'two','Party Two','Thamel','tow@party.com',30000.00,20000.00,0);
 
 /*!40000 ALTER TABLE `parties` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -115,20 +120,6 @@ CREATE TABLE `product_price` (
   CONSTRAINT `product_price_ibfk_2` FOREIGN KEY (`party_id`) REFERENCES `parties` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-LOCK TABLES `product_price` WRITE;
-/*!40000 ALTER TABLE `product_price` DISABLE KEYS */;
-
-INSERT INTO `product_price` (`id`, `product_id`, `party_id`, `rate`)
-VALUES
-	(19,12,8,340.00),
-	(20,12,9,3405.00),
-	(21,12,10,340.00),
-	(22,13,8,677.00),
-	(23,13,9,677.00),
-	(24,13,10,677.00);
-
-/*!40000 ALTER TABLE `product_price` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table products
@@ -144,16 +135,6 @@ CREATE TABLE `products` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-LOCK TABLES `products` WRITE;
-/*!40000 ALTER TABLE `products` DISABLE KEYS */;
-
-INSERT INTO `products` (`id`, `name`, `unit`, `base_rate`)
-VALUES
-	(12,'Oxygen','M3',340.00),
-	(13,'Nitrogen','M3',677.00);
-
-/*!40000 ALTER TABLE `products` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table staffs
@@ -165,11 +146,22 @@ CREATE TABLE `staffs` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `party_id` int(11) NOT NULL,
   `name` varchar(60) NOT NULL DEFAULT '',
-  `mobile` int(11) NOT NULL,
+  `mobile` varchar(25) NOT NULL DEFAULT '',
   `email` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `staffs` WRITE;
+/*!40000 ALTER TABLE `staffs` DISABLE KEYS */;
+
+INSERT INTO `staffs` (`id`, `party_id`, `name`, `mobile`, `email`)
+VALUES
+	(1,10,'Hari Gopal','9851000899','harigopal@gmail.com'),
+	(4,9,'Bigyan Lama','9876556356',''),
+	(5,8,'Sumnima Pandey','9876787666','gurung_sudeep1972@gmail.com');
+
+/*!40000 ALTER TABLE `staffs` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table transactions

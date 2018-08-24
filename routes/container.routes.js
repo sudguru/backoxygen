@@ -10,7 +10,6 @@ router.get('/', function(req, res, next) {
     			console.log(error);
           res.json({status: 500, error: error.message, data: null })
         } else {
-          console.log(results);
           res.json({status: 200, error: null, data: results});
         }
     });
@@ -19,11 +18,19 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
     var container = req.body.container;
     res.locals.connection.query('INSERT INTO containers SET ?', container , function (error, results, fields) {
-    		container.id = results.insertId;
         if (error) {
           console.log(error);
-          res.json({status: 500, error: error.message, data: null })
+          res.json({ status: 500, error: error.message, data: null })
         } else {
+          container.id = results.insertId;
+          parties.forEach(party => {
+            const container_initial_stock = {
+              party_id: party.id,
+              container_id: container.id,
+              quantity: 0
+            };
+            res.locals.connection.query('INSERT INTO container_initial_stock SET ?', container_initial_stock);
+          });
           res.json({status: 200, error: null, data: container});
         }
     });
