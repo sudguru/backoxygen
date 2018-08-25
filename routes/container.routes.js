@@ -17,6 +17,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
     var container = req.body.container;
+    var parties = req.body.parties;
     res.locals.connection.query('INSERT INTO containers SET ?', container , function (error, results, fields) {
         if (error) {
           console.log(error);
@@ -58,6 +59,35 @@ router.delete('/:id', function(req, res, next) {
     if (error) throw error;
     res.json({status: 200, error: null, data: true});
   });
+});
+
+router.get('/initialstock', function(req, res, next) {
+    res.locals.connection.query('SELECT * from container_initial_stock order by party_id, container_id',  function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({status: 500, error: error.message, data: null })
+        } else {
+          res.json({status: 200, error: null, data: results});
+        }
+    });
+});
+
+router.post('/initialstock/edit', function(req, res, next) {
+    const container_id = req.body.container_id;
+    const party_id = req.body.party_id;
+    const quantity = req.body.quantity;
+    console.log(container_id);
+    console.log(party_id);
+
+
+    res.locals.connection.query('UPDATE container_initial_stock SET quantity = ? where container_id = ? and party_id = ?', [ quantity, container_id, party_id ] , function (error, results, fields) {
+        if (error) {
+          res.json({status: 500, error: error.message, data: null })
+        } else {
+          // res.json({status: 200, error: null, data: true});
+          res.redirect('/containers/initialstock');
+        }
+    });
 });
 
 
